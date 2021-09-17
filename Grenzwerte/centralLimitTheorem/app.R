@@ -1,4 +1,5 @@
 library(shiny)
+##Author: ...
 
 m <- 1000  # number of samples; fest einstellen
 mean <- 8 # true population mean, z.B. Miete in Euro/qm; fest einstellen
@@ -184,7 +185,7 @@ server <- function(input, output, session) {
             xlab("x") +
             ylab("Dichte") +
             ggtitle("Histogramm der Stichprobenmittelwerte, wahrer Mittelwert 
-          und deren theoretische Normalverteilung (rot)")
+          und deren theoretische Normalverteilung. (rot)")
     }) 
     
     
