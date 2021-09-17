@@ -1,4 +1,5 @@
 library(shiny)
+library(ggplot2)
 ##Author: ...
 
 m <- 1000  # number of samples; fest einstellen
