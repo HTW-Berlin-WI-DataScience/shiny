@@ -22,7 +22,7 @@ greekCodes <- list(HTML("\\sigma / n"), HTML("\\sigma / \\sqrt{n}"), HTML("\\sig
 
 
 
-# Labels for Questions
+# Labels for Questions    den wahren Mittelwert als rote gestrichelte Linie.
 label_question_one <- HTML('Wie verändert sich die Streuung der tausend Mittelwerte, wenn wir die Stichproben vergrößern?')
 label_question_two <- 'Welcher Wahrscheinlichkeitsverteilung folgen die Mittelwerte näherungsweise?'
 label_question_three <- HTML("Wenn \\(\\sigma\\) die Standardabweichung aller Mietpreise pro Quadratmeter ist und n die Stichprobengröße, dann beträgt die Standabweichung der Stichprobenmittelwerte")
@@ -31,7 +31,7 @@ label_question_three <- HTML("Wenn \\(\\sigma\\) die Standardabweichung aller Mi
 text1 <- HTML("In dieser <b> App </b> werden Aussagen des Zentralen Grenzwertsatzes der Statistik demonstriert. Als Beispiel möchten wir die mittlere Miete pro Quadratmeter in einer Stadt bestimmen. In der Praxis kennen wir üblicherweise nur die Mietpreise von einer Stichprobe der Immobilien und können daraus die wahre mittlere Miete nur schätzen. Der zentrale Grenzwertsatz hilft uns dabei, die Genauigkeit unserer Schätzung zu untersuchen.")
 text2 <- HTML("Um die Theorie zu erklären, gehen wir davon aus, dass wir den Mietpreis pro qm aller Immobilien in der Stadt und damit auch dessen wahren Mittelwert und die Standardabweichung \\(\\sigma\\) als Maß für die Streuung kennen.
               Wir ziehen nun tausendmal eine Stichprobe der Größe n aus den Daten und berechnen für jede der tausend Stichproben die mittlere Miete und schauen, wie sich die tausend Schätzungen zum wahren Mittelwert verhalten.")
-text3 <- 'Das Histogramm zeigt die Verteilung der eintausend Mittelwerte sowie den wahren Mittelwert als rote gestrichelte Linie.'
+text3 <- 'Das Histogramm zeigt die Verteilung der eintausend Mittelwerte sowie'
 
 ui <- fluidPage(
     withMathJax(),
@@ -95,7 +95,7 @@ ui <- fluidPage(
             br(),
             p(text2),
             br(),
-            p(text3),
+            textOutput("answertext"),
             plotOutput("plot")
         )
     )
@@ -173,6 +173,47 @@ server <- function(input, output, session) {
         input$secondInput
     })
     
+    output$answertext <- reactive({
+      if(length(value_reactive()) > 0){
+        
+        if(!value_reactive() == ""){
+          
+          if(value_reactive() == quizTwo_answer_two){
+            paste(text3 ,"den wahren Mittelwert als rote gestrichelte Linie.")
+          }
+          
+        }
+        else {
+          text3
+        }
+        
+      } 
+      else {
+        text3
+      }
+    })
+    
+    
+    
+    text_reactive <- reactive({
+      if(length(value_reactive()) > 0){
+        
+        if(!value_reactive() == ""){
+          
+          if(value_reactive() == quizTwo_answer_two){
+            "deren theoretische Normalverteilung. (rot)"
+          }
+          
+        }
+        else {
+          ""
+        }
+        
+      } 
+      else {
+        ""
+      }
+    })
     
     plotA_reactive <- reactive({
         ggplot(data = mean_vector(), aes(x=means)) +
@@ -185,8 +226,7 @@ server <- function(input, output, session) {
             xlim(6, 10) +
             xlab("x") +
             ylab("Dichte") +
-            ggtitle("Histogramm der Stichprobenmittelwerte, wahrer Mittelwert 
-          und deren theoretische Normalverteilung. (rot)")
+            ggtitle(paste("Histogramm der Stichprobenmittelwerte, wahrer Mittelwert und", text_reactive()))
     }) 
     
     
