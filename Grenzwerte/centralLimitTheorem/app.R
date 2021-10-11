@@ -18,17 +18,17 @@ quizTwo_answer_two <- "einer Normalverteilung um den wahren Mittelwert" #(richti
 quizTwo_answer_three <- "einer Exponentialverteilung mit dem wahren Mittelwert"
 
 #Antworten Frage 3
-greekCodes <- list(HTML("\\sigma / n"), HTML("\\sigma / \\sqrt{n}"), HTML("\\sigma * n^2")) # note the six backslahes
+greekCodes <- list("", HTML("\\sigma / n"), HTML("\\sigma / \\sqrt{n}"), HTML("\\sigma * n^2")) # note the six backslahes
 
 
 
 # Labels for Questions    den wahren Mittelwert als rote gestrichelte Linie.
 label_question_one <- HTML('Wie verändert sich die Streuung der tausend Mittelwerte, wenn wir die Stichproben vergrößern?')
 label_question_two <- 'Welcher Wahrscheinlichkeitsverteilung folgen die Mittelwerte näherungsweise?'
-label_question_three <- HTML("Wenn \\(\\sigma\\) die Standardabweichung aller Mietpreise pro Quadratmeter ist und n die Stichprobengröße, dann beträgt die Standabweichung der Stichprobenmittelwerte")
+label_question_three <- HTML("<b>Wenn \\(\\sigma\\) die Standardabweichung aller Mietpreise pro Quadratmeter ist und n die Stichprobengröße, dann beträgt die Standabweichung der Stichprobenmittelwerte</b>")
 
 # Main Text
-text1 <- HTML("In dieser <b> App </b> werden Aussagen des Zentralen Grenzwertsatzes der Statistik demonstriert. Als Beispiel möchten wir die mittlere Miete pro Quadratmeter in einer Stadt bestimmen. In der Praxis kennen wir üblicherweise nur die Mietpreise von einer Stichprobe der Immobilien und können daraus die wahre mittlere Miete nur schätzen. Der zentrale Grenzwertsatz hilft uns dabei, die Genauigkeit unserer Schätzung zu untersuchen.")
+text1 <- HTML("In dieser App werden Aussagen des Zentralen Grenzwertsatzes der Statistik demonstriert. Als Beispiel möchten wir die mittlere Miete pro Quadratmeter in einer Stadt bestimmen. In der Praxis kennen wir üblicherweise nur die Mietpreise von einer Stichprobe der Immobilien und können daraus die wahre mittlere Miete nur schätzen. Der zentrale Grenzwertsatz hilft uns dabei, die Genauigkeit unserer Schätzung zu untersuchen.")
 text2 <- HTML("Um die Theorie zu erklären, gehen wir davon aus, dass wir den Mietpreis pro qm aller Immobilien in der Stadt und damit auch dessen wahren Mittelwert und die Standardabweichung \\(\\sigma\\) als Maß für die Streuung kennen.
               Wir ziehen nun tausendmal eine Stichprobe der Größe n aus den Daten und berechnen für jede der tausend Stichproben die mittlere Miete und schauen, wie sich die tausend Schätzungen zum wahren Mittelwert verhalten.")
 text3 <- 'Das Histogramm zeigt die Verteilung der eintausend Mittelwerte sowie'
@@ -63,20 +63,31 @@ ui <- fluidPage(
     sidebarLayout(
         sidebarPanel(
             sliderInput("sample",
-                        "Stichproben größe:",
+                        "Stichprobengröße:",
                         step = 10,
                         min = 10,
                         max = 500,
                         value = 100),
-            selectInput(
-                inputId = 'mainInput',
-                label = label_question_one,
-                choices = c("",quizOne_answer_one,
-                            quizOne_answer_two,
-                            quizOne_answer_three)
+            selectInput("mainInput", label_question_one, choices = c("",quizOne_answer_one,
+                                                                     quizOne_answer_two,
+                                                                     quizOne_answer_three), selectize = FALSE),
+            
+          
+            htmlOutput("answerOne"),
+            tags$head(tags$style("#answerOne{color: green;
+                                 font-size: 15px;
+                                 }"
+                                 )
             ),
+            
             uiOutput(
                 outputId = 'secondInputUI'
+            ),
+            htmlOutput("answerTwo"),
+            tags$head(tags$style("#answerTwo{color: green;
+                                 font-size: 15px;
+                                 }"
+                                 )
             ),
             uiOutput(
                 outputId = 'text'
@@ -84,8 +95,11 @@ ui <- fluidPage(
             uiOutput(
                 outputId = 'thirdInput'
             ),
-            uiOutput(
-                outputId = 'lastInput'
+            htmlOutput("answerThree"),
+            tags$head(tags$style("#answerThree{color: green;
+                                 font-size: 15px;
+                                 }"
+                                 )
             )
         ),
         
@@ -103,35 +117,51 @@ ui <- fluidPage(
 
 
 server <- function(input, output, session) {
+  
+  observeEvent(input$mainInput, {
+    if (input$mainInput == quizOne_answer_two){
+      removeUI(
+        selector = "div:has(> #mainInput)"
+      )
+      
+      output$answerOne <- renderText({
+        paste("<b>Richtig: " ,quizOne_answer_two, "</b>")
+      })
+      
+      output$secondInputUI <- 
+        renderUI(
+          selectInput(
+            inputId = 'secondInput',
+            label = label_question_two,
+            choices = c("",quizTwo_answer_one,
+                        quizTwo_answer_two,
+                        quizTwo_answer_three)
+          )
+        )
+      
+    }
     
-    #Event wenn Antwort für erste Frage getätig wird --> zur zweiten Frage
-    observeEvent(input$mainInput, {
-        if (input$mainInput == quizOne_answer_three)
-            output$secondInputUI <- 
-                renderUI(
-                    selectInput(
-                        inputId = 'secondInput',
-                        label = label_question_two,
-                        choices = c("",quizTwo_answer_one,
-                                    quizTwo_answer_two,
-                                    quizTwo_answer_three)
-                    )
-                )
-    })
-    
-    
+  })
     
     
     #Event wenn Antwort für erste Frage getätig wird --> zur dritten Frage
     observeEvent(input$secondInput, {
-        if (input$secondInput == quizTwo_answer_two)
-            output$thirdInput <-
-                renderUI(
-                    selectizeInput(
-                        'thirdInput',
-                        label = NULL,
-                        choices = greekCodes,
-                        options = list(render = I("
+        if (input$secondInput == quizTwo_answer_two){
+          removeUI(
+            selector = "div:has(> #secondInput)"
+          )
+          
+          output$answerTwo <- renderText({
+            paste("<b>Richtig: " ,quizTwo_answer_two, "</b>")
+          })
+          
+          output$thirdInput <-
+            renderUI(
+              selectizeInput(
+                'thirdInput',
+                label = NULL,
+                choices = greekCodes,
+                options = list(render = I("
                                     {
                                     item:   function(item, escape) { 
                                       var html = katex.renderToString(item.label);
@@ -143,14 +173,31 @@ server <- function(input, output, session) {
                                     }
                                     }
                                                               "))
-                    )
-                )
-        
-        output$text <- renderUI(
+              )
+            )
+        }
+        if (input$secondInput == quizTwo_answer_two){
+          output$text <- renderUI(
             withMathJax(label_question_three)
-        )
-        
+          )
+        }
     })
+    
+    
+    
+    observeEvent(input$thirdInput, {
+      if (input$thirdInput == HTML("\\sigma / \\sqrt{n}")){
+        removeUI(
+          selector = "div:has(> #thirdInput)"
+        )
+        output$answerThree <- renderText({
+          paste("<b>Richtig:", withMathJax("\\(\\sigma / \\sqrt{n}\\)"), "</b>")
+        })
+        
+      }
+    })
+    
+    
     
     # reactive Werte für das Histo
     size <- reactive({
@@ -239,6 +286,9 @@ server <- function(input, output, session) {
                 
                 if(value_reactive() == quizTwo_answer_two){
                     plotA_reactive() + stat_function(fun = function(x) dnorm(x,mean,sd/sqrt(size())),colour = "red")
+                }
+              else {
+                  plotA_reactive()
                 }
                 
             }
