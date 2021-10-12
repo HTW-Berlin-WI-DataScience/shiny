@@ -79,6 +79,7 @@ ui <- fluidPage(
                                  }"
                                  )
             ),
+            br(),
             
             uiOutput(
                 outputId = 'secondInputUI'
@@ -89,6 +90,8 @@ ui <- fluidPage(
                                  }"
                                  )
             ),
+            br(),
+            
             uiOutput(
                 outputId = 'text'
             ),
@@ -138,8 +141,10 @@ server <- function(input, output, session) {
                         quizTwo_answer_three)
           )
         )
-      
     }
+    # } else{
+    #   output$falschOne <- renderUI(tags$style("#select1 {border: 2px solid #dd4b39;}"))
+    # }
     
   })
     
@@ -271,7 +276,7 @@ server <- function(input, output, session) {
             #anser_reactive()+
             #  geom_jitter(aes(x=means, y=0), col = "blue") + 
             xlim(6, 10) +
-            xlab("x") +
+            xlab("mittlerer Mietpreis pro quadratmeter") +
             ylab("Dichte") +
             ggtitle(paste("Histogramm der Stichprobenmittelwerte, wahrer Mittelwert und", text_reactive()))
     }) 
