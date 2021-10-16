@@ -25,13 +25,14 @@ greekCodes <- list("", HTML("\\sigma / n"), HTML("\\sigma / \\sqrt{n}"), HTML("\
 # Labels for Questions    den wahren Mittelwert als rote gestrichelte Linie.
 label_question_one <- HTML('Wie verändert sich die Streuung der tausend Mittelwerte, wenn wir die Stichproben vergrößern?')
 label_question_two <- 'Welcher Wahrscheinlichkeitsverteilung folgen die Mittelwerte näherungsweise?'
-label_question_three <- HTML("<b>Wenn \\(\\sigma\\) die Standardabweichung aller Mietpreise pro Quadratmeter ist und n die Stichprobengröße, dann beträgt die Standabweichung der Stichprobenmittelwerte</b>")
+label_question_three <- HTML("<b>Wenn \\(\\sigma\\) die Standardabweichung aller Mietpreise pro Quadratmeter ist und n die Stichprobengröße, dann beträgt die Standardabweichung der Stichprobenmittelwerte</b>")
 
 # Main Text
 text1 <- HTML("In dieser App werden Aussagen des Zentralen Grenzwertsatzes der Statistik demonstriert. Als Beispiel möchten wir die mittlere Miete pro Quadratmeter in einer Stadt bestimmen. In der Praxis kennen wir üblicherweise nur die Mietpreise von einer Stichprobe der Immobilien und können daraus die wahre mittlere Miete nur schätzen. Der zentrale Grenzwertsatz hilft uns dabei, die Genauigkeit unserer Schätzung zu untersuchen.")
 text2 <- HTML("Um die Theorie zu erklären, gehen wir davon aus, dass wir den Mietpreis pro qm aller Immobilien in der Stadt und damit auch dessen wahren Mittelwert und die Standardabweichung \\(\\sigma\\) als Maß für die Streuung kennen.
               Wir ziehen nun tausendmal eine Stichprobe der Größe n aus den Daten und berechnen für jede der tausend Stichproben die mittlere Miete und schauen, wie sich die tausend Schätzungen zum wahren Mittelwert verhalten.")
 text3 <- 'Das Histogramm zeigt die Verteilung der eintausend Mittelwerte sowie'
+text4 <- "den wahren Mittelwert als rote gestrichelte Linie."
 
 ui <- fluidPage(
     withMathJax(),
@@ -71,6 +72,12 @@ ui <- fluidPage(
             selectInput("mainInput", label_question_one, choices = c("",quizOne_answer_one,
                                                                      quizOne_answer_two,
                                                                      quizOne_answer_three), selectize = FALSE),
+            textOutput("falscheAntwortOne"),
+            tags$head(tags$style("#falscheAntwortOne{color: red;
+                                 font-size: 15px;
+                                 }"
+            )
+            ),
             
           
             htmlOutput("answerOne"),
@@ -84,6 +91,14 @@ ui <- fluidPage(
             uiOutput(
                 outputId = 'secondInputUI'
             ),
+            textOutput("falscheAntwortTwo"),
+            tags$head(tags$style("#falscheAntwortTwo{color: red;
+                                 font-size: 15px;
+                                 }"
+            )
+            ),
+            
+            
             htmlOutput("answerTwo"),
             tags$head(tags$style("#answerTwo{color: green;
                                  font-size: 15px;
@@ -95,8 +110,15 @@ ui <- fluidPage(
             uiOutput(
                 outputId = 'text'
             ),
+            
             uiOutput(
                 outputId = 'thirdInput'
+            ),
+            textOutput("falscheAntwortThree"),
+            tags$head(tags$style("#falscheAntwortThree{color: red;
+                                 font-size: 15px;
+                                 }"
+            )
             ),
             htmlOutput("answerThree"),
             tags$head(tags$style("#answerThree{color: green;
@@ -121,6 +143,12 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   
+  falscheAntwortReaktiv <- reactive({
+    if (input$mainInput != quizOne_answer_two){
+      "Die Antwort ist leider falsch"
+    }
+  })
+  
   observeEvent(input$mainInput, {
     if (input$mainInput == quizOne_answer_two){
       removeUI(
@@ -142,12 +170,22 @@ server <- function(input, output, session) {
           )
         )
     }
-    # } else{
-    #   output$falschOne <- renderUI(tags$style("#select1 {border: 2px solid #dd4b39;}"))
-    # }
+    else
+      if(input$mainInput != ""){
+      output$falscheAntwortOne <- renderText({
+        falscheAntwortReaktiv()
+      })
+    }
     
   })
+
     
+  
+  falscheAntwortReaktivTwo <- reactive({
+    if (input$secondInput != quizTwo_answer_two){
+      "Die Antwort ist leider falsch"
+    }
+  })
     
     #Event wenn Antwort für erste Frage getätig wird --> zur dritten Frage
     observeEvent(input$secondInput, {
@@ -180,7 +218,13 @@ server <- function(input, output, session) {
                                                               "))
               )
             )
-        }
+        } else
+          if(input$secondInput != ""){
+            output$falscheAntwortTwo <- renderText({
+              falscheAntwortReaktivTwo()
+            })
+          }
+      
         if (input$secondInput == quizTwo_answer_two){
           output$text <- renderUI(
             withMathJax(label_question_three)
@@ -188,6 +232,14 @@ server <- function(input, output, session) {
         }
     })
     
+    
+    
+    
+    falscheAntwortReaktivThree <- reactive({
+      if (input$thirdInput != HTML("\\sigma / \\sqrt{n}")){
+        "Die Antwort ist leider falsch"
+      }
+    })
     
     
     observeEvent(input$thirdInput, {
@@ -200,6 +252,12 @@ server <- function(input, output, session) {
         })
         
       }
+      else
+        if(input$thirdInput != ""){
+          output$falscheAntwortThree <- renderText({
+            falscheAntwortReaktivThree()
+          })
+        }
     })
     
     
@@ -231,7 +289,9 @@ server <- function(input, output, session) {
         if(!value_reactive() == ""){
           
           if(value_reactive() == quizTwo_answer_two){
-            paste(text3 ,"den wahren Mittelwert als rote gestrichelte Linie.")
+            paste(text3, text4)
+          }else{
+            text3
           }
           
         }
@@ -245,28 +305,6 @@ server <- function(input, output, session) {
       }
     })
     
-    
-    
-    text_reactive <- reactive({
-      if(length(value_reactive()) > 0){
-        
-        if(!value_reactive() == ""){
-          
-          if(value_reactive() == quizTwo_answer_two){
-            "deren theoretische Normalverteilung. (rot)"
-          }
-          
-        }
-        else {
-          ""
-        }
-        
-      } 
-      else {
-        ""
-      }
-    })
-    
     plotA_reactive <- reactive({
         ggplot(data = mean_vector(), aes(x=means)) +
             geom_histogram(aes(y=..density..), binwidth = my_binwidth(), col = "white") + 
@@ -277,8 +315,7 @@ server <- function(input, output, session) {
             #  geom_jitter(aes(x=means, y=0), col = "blue") + 
             xlim(6, 10) +
             xlab("mittlerer Mietpreis pro quadratmeter") +
-            ylab("Dichte") +
-            ggtitle(paste("Histogramm der Stichprobenmittelwerte, wahrer Mittelwert und", text_reactive()))
+            ylab("Dichte")
     }) 
     
     
