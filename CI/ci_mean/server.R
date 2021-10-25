@@ -130,6 +130,23 @@ shinyServer(function(input, output, session) {
         confint <<- vector("list", 0)
     })
     
+    
+    #Ausarbeiten??
+    # wiedergabe <- reactive({
+    #     var      <- getVar()
+    #     
+    #     if(nameOfValue == var[["data"]]){
+    #         nameOfValue = nameOfValue
+    #         input$go
+    #     } else {
+    #         input$reset
+    #         confint <<- vector("list", 0)
+    #         input$go
+    #     }
+    #     
+    #     
+    # })
+    
     drawSample <- reactive ({
         mmstat.log(sprintf('drawSample'))
         inp <- mmstat.getValues (NULL,
