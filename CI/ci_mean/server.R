@@ -77,16 +77,10 @@ shinyServer(function(input, output, session) {
     })
     
     
-    getDataSet <- eventReactive(triggerChanges(), {
-        input$dataset
-    })
     
-    getVariable <- eventReactive(triggerChanges(), {
-        input$variable
-    })
     
     output$variableUI <- renderUI({
-        inp  <- mmstat.getValues(NULL, dataset= getDataSet())
+        inp  <- mmstat.getValues(NULL, dataset=input$dataset)
         mmstat.ui.call('variable',
                        choices = mmstat.getVarNames(inp$dataset, 'numeric'))
     })  
@@ -94,8 +88,8 @@ shinyServer(function(input, output, session) {
     
     
     getVar <- reactive({
-        inp         <- mmstat.getValues(NULL, dataset=isolate(getDataSet()), variable=getVariable())
-        var         <- mmstat.getVar(getDataSet(), getVariable())
+        inp         <- mmstat.getValues(NULL, dataset=isolate(input$dataset), variable=input$variable)
+        var         <- mmstat.getVar(inp$dataset, inp$variable)
         var$ticks   <- mmstat.ticks(var$n, nmin=30)   
         dec         <- mmstat.dec(0.1*c(0, var$sd/sqrt(max(var$ticks))))
         var$decimal <- dec$decimal
@@ -106,7 +100,7 @@ shinyServer(function(input, output, session) {
     
     #trigger for multible events
     triggerChanges <- reactive({
-        paste(input$go , input$speed, input$reset)
+        paste(input$go , input$speed)
     })
     
     #for the Level
@@ -129,23 +123,6 @@ shinyServer(function(input, output, session) {
         input$reset
         confint <<- vector("list", 0)
     })
-    
-    
-    #Ausarbeiten??
-    # wiedergabe <- reactive({
-    #     var      <- getVar()
-    #     
-    #     if(nameOfValue == var[["data"]]){
-    #         nameOfValue = nameOfValue
-    #         input$go
-    #     } else {
-    #         input$reset
-    #         confint <<- vector("list", 0)
-    #         input$go
-    #     }
-    #     
-    #     
-    # })
     
     drawSample <- reactive ({
         mmstat.log(sprintf('drawSample'))
