@@ -2,44 +2,34 @@ library("shiny")
 library("shinydashboard")
 
 
-dashboardPage(
-    dashboardHeader(title="MM*Stat"),
-    dashboardSidebar(
-        sidebarMenu(
-            menuItem(text=gettext("Confidence interval parameter"), selected=TRUE,
-                     menuSubItem(uiOutput("conflevelUI"), icon = NULL),
-                     menuSubItem(uiOutput("sizeUI"), icon = NULL),
-                     menuSubItem(uiOutput("sigmaUI"),icon = NULL)
-            ),
-            menuItem(text=gettext("Sample drawing"), selected=TRUE,
-                     menuSubItem(uiOutput("goUI"), icon = NULL),
-                     menuSubItem(uiOutput("resetUI"), icon = NULL),
-                     menuSubItem(uiOutput("speedUI"), icon = NULL)
-            ),
-            menuItem(text=gettext("Data choice"), selected=TRUE,
-                     menuSubItem(uiOutput("datasetUI"), icon = NULL),
-                     menuSubItem(uiOutput("variableUI"), icon = NULL)
-            )
+shinyUI(fluidPage(
+    
+    # Application title
+    titlePanel("MM*Stat"),
+    
+    # Sidebar with a slider input for number of bins
+    sidebarLayout(
+        sidebarPanel(
+            uiOutput("conflevelUI"),
+            uiOutput("sizeUI"),
+            uiOutput("sigmaUI"),
+            uiOutput("goUI"),
+            uiOutput("resetUI"),
+            uiOutput("speedUI"),
+            uiOutput("datasetUI"),
+            uiOutput("variableUI"),
+            p(actionLink(
+                inputId = "github",
+                label = "Hier",
+                icon = icon("github"),
+                href = "https://github.com/Kale14/mmstat4/tree/main/inst/examples/stat/confidence_mean",
+                onclick = "window.open('https://github.com/Kale14/mmstat4/tree/main/inst/examples/stat/confidence_mean')"), "kommt ihr zum Code der HU")
+        ),
+        
+        # Show a plot of the generated distribution
+        mainPanel(
+            plotOutput("outputConfPlot"),
+            plotOutput("outputSamplePlot")
         )
-    ),
-    dashboardBody(
-        fluidRow(
-            column(width = 12, 
-                   box(title=gettext("Confidence intervals for the mean"),
-                       plotOutput("outputConfPlot"),
-                       plotOutput("outputSamplePlot", height = "200px"),
-                   ),
-                   box(
-                       actionLink(
-                           inputId = "github",
-                           label = "HU Code- Sigbert Klinke",
-                           icon = icon("github"),
-                           href = "https://github.com/Kale14/mmstat4/tree/main/inst/examples/stat/confidence_mean",
-                           onclick = "window.open('https://github.com/Kale14/mmstat4/tree/main/inst/examples/stat/confidence_mean')"))
-            )
-        )
-    ),
-    tags$head(
-        tags$link(rel = "stylesheet", type = "text/css", href = "test.css")
     )
-)
+))
