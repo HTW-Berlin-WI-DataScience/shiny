@@ -4,7 +4,7 @@ library("shinydashboard")
 shinyUI(fluidPage(
     
     # Application title
-    titlePanel("Confidence Interval"),
+    titlePanel("MM*Stat"),
     
     # Sidebar with a slider input for number of bins
     sidebarLayout(
@@ -17,12 +17,12 @@ shinyUI(fluidPage(
             uiOutput("speedUI"),
             uiOutput("datasetUI"),
             uiOutput("variableUI"),
-            p(actionLink(
+            p("Based on code from Sigbert Klinke ", actionLink(
                 inputId = "github",
-                label = "Hier",
+                label = "Github",
                 icon = icon("github"),
-                href = "https://github.com/Kale14/mmstat4/tree/main/inst/examples/stat/confidence_mean",
-                onclick = "window.open('https://github.com/Kale14/mmstat4/tree/main/inst/examples/stat/confidence_mean')"), "kommt ihr zum Code der HU")
+                href = "https://github.com/sigbertklinke/mmstat4/tree/main/inst/examples/stat/confidence_mean",
+                onclick = "window.open('https://github.com/Kale14/mmstat4/tree/main/inst/examples/stat/confidence_mean')"))
         ),
         
         # Show a plot of the generated distribution
