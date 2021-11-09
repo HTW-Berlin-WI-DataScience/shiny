@@ -3,10 +3,10 @@ library("shinydashboard")
 
 shinyUI(fluidPage(
     
-    # Application title
-    titlePanel("MM*Stat"),
+
+    titlePanel("Confidence interval"),
     
-    # Sidebar with a slider input for number of bins
+    
     sidebarLayout(
         sidebarPanel(
             uiOutput("conflevelUI"),
