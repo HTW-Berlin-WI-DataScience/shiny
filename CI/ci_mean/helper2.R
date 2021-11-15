@@ -520,7 +520,7 @@ mmstat.ui.elem <- function (inputId, type, ...) {
     if (elem$type=='speedSlider') { # sliderInput for choosing font size
       elem$call   <- 'mmstat.sliderInput' 
       elem$update <- 'updateSliderInput' 
-      if (is.null(elem$label)) elem$label <- list(NULL)
+      if (is.null(elem$label)) elem$label <- gettext("Draw sample speed slider ")
       if (is.null(elem$min))   elem$min   <- 0
       if (is.null(elem$max))   elem$max   <- 5 
       if (is.null(elem$step))  elem$step  <- 1
