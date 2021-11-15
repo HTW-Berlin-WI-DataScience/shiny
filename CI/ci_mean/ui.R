@@ -14,7 +14,12 @@ shinyUI(fluidPage(
             uiOutput("sigmaUI"),
             uiOutput("goUI"),
             uiOutput("resetUI"),
+            
+            #Passenden Name dazu. Nichts langes (sequence of samples)
+            br(),
             uiOutput("speedUI"),
+            
+            #Bei änderungen anpassen
             uiOutput("datasetUI"),
             uiOutput("variableUI"),
             p("Based on code from Sigbert Klinke ", actionLink(
