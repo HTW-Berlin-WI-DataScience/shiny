@@ -85,7 +85,9 @@ shinyServer(function(input, output, session) {
                        choices = mmstat.getVarNames(inp$dataset, 'numeric'))
     })  
     
-    
+    observeEvent(input$dataset,{
+        confint <<- vector("list", 0)
+    })
     
     getVar <- reactive({
         inp         <- mmstat.getValues(NULL, dataset=isolate(input$dataset), variable=input$variable)
