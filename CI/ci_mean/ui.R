@@ -15,7 +15,7 @@ shinyUI(fluidPage(
             uiOutput("goUI"),
             uiOutput("resetUI"),
             
-            #Passenden Name dazu. Nichts langes (sequence of samples)
+            #Passenden Name dazu. Nichts langes (Draw) sequence of samples)
             br(),
             uiOutput("speedUI"),
             
