@@ -267,7 +267,7 @@ shinyServer(function(input, output, session) {
       axis(3, at=posx, labels=c(expression('n'), expression(alpha), expression(hat(alpha))), cex.axis=inp$cex)
       abline(v=var$mean, col=mmstat$col[[1]], lwd=3, lty="dotted")
       
-      text(3, 1.5, labels=c(index))       
+      #text(3, 1.5, labels=c(index))       
       box()
     }
   })    
