@@ -1,10 +1,14 @@
 library(shiny)
 library(ggplot2)
+library(plotly)
 ##Author: ...
 
 m <- 1000  # number of samples; fest einstellen
 mean <- 8 # true population mean, z.B. Miete in Euro/qm; fest einstellen
 sd <- 2  # population standard deviation; fest einstellen
+data <- rnorm(1000, mean = mean, sd = sd)
+
+mean_vector <- vector()
 
 
 # Antworten Frage 1
@@ -135,13 +139,15 @@ ui <- fluidPage(
             p(text2),
             br(),
             textOutput("answertext"),
-            plotOutput("plot")
+            plotlyOutput("plot")
         )
     )
 )
 
 
 server <- function(input, output, session) {
+  
+  
   
   falscheAntwortReaktiv <- reactive({
     if (input$mainInput != quizOne_answer_two){
@@ -272,11 +278,15 @@ server <- function(input, output, session) {
     })
     
     mean_vector <- reactive({
-        data.frame(means = colMeans(samples()))
+      replicate(1000, mean(sample(data, size(), replace = FALSE)))
+    })
+    
+    dataFrame_means <- reactive({
+      data.frame(daten = mean_vector())
     })
     
     my_binwidth <- reactive({
-        (max(mean_vector()) - min(mean_vector())) / 12
+        (max(dataFrame_means() - min(dataFrame_means()))) / 12
     })
     
     value_reactive <- reactive({
@@ -305,44 +315,65 @@ server <- function(input, output, session) {
       }
     })
     
-    plotA_reactive <- reactive({
-        ggplot(data = mean_vector(), aes(x=means)) +
-            geom_histogram(aes(y=..density..), binwidth = my_binwidth(), col = "white") + 
-            #  geom_density(alpha=.2, fill="#FF6666") +
-            geom_vline(aes(xintercept=mean), 
-                       color="red", linetype="dashed", size=1) +
-            #anser_reactive()+
-            #  geom_jitter(aes(x=means, y=0), col = "blue") + 
-            xlim(6, 10) +
-            xlab("mittlerer Mietpreis pro quadratmeter") +
-            ylab("Dichte")
-    }) 
     
+    figur2 <- reactive({
+      ggplotly(
+        ggplot(data = dataFrame_means(), aes(x=daten)) +
+          geom_histogram(aes(y=..density..), binwidth = my_binwidth(), col = "white") +
+          #  geom_density(alpha=.2, fill="#FF6666") +
+          geom_vline(aes(xintercept=mean),
+                     color="red", linetype="dashed", size=1) +
+          #anser_reactive()+
+          #  geom_jitter(aes(x=means, y=0), col = "blue") +
+          xlim(6, 10) +
+          xlab("mittlerer Mietpreis pro quadratmeter") +
+          ylab("Dichte") +
+          geom_histogram(data = data.frame(data = data), aes(x = data, y=..density..), binwidth = my_binwidth(), col = "white", alpha=.2, fill="#FF6666")
+      )
+    })
+  
+
     
-    #Plot Histo
-    output$plot <- renderPlot({
-        
+    # #Plot Histo
+    output$plot <- renderPlotly({
         if(length(value_reactive()) > 0){
-            
+
             if(!value_reactive() == ""){
-                
+
                 if(value_reactive() == quizTwo_answer_two){
-                    plotA_reactive() + stat_function(fun = function(x) dnorm(x,mean,sd/sqrt(size())),colour = "red")
+                  xa <- seq(0,10, length.out=100)
+                  dd <- with(dataFrame_means(), data.frame(xa= xa, y = dnorm(xa, mean(daten), sd(daten))))
+                  ggplotly(
+                    ggplot(data = dataFrame_means(), aes(x=daten)) +
+                      geom_histogram(aes(y=..density..), binwidth = my_binwidth(), col = "white") +
+                      #  geom_density(alpha=.2, fill="#FF6666") +
+                      geom_vline(aes(xintercept=mean),
+                                 color="red", linetype="dashed", size=1) +
+                      #anser_reactive()+
+                      #  geom_jitter(aes(x=means, y=0), col = "blue") +
+                      xlim(6, 10) +
+                      xlab("mittlerer Mietpreis pro quadratmeter") +
+                      ylab("Dichte") + geom_function(fun = dnorm) +
+                      geom_line(data = dd, aes(x = xa, y=y), color = "red")+
+                      geom_histogram(data = data.frame(data = data), aes(x = data, y=..density..), binwidth = my_binwidth(), col = "white", alpha=.2, fill="#FF6666")
+                    #stat_function(fun = function(x) dnorm(x,mean,sd/sqrt(size())),colour = "red")
+                  )
+
                 }
               else {
-                  plotA_reactive()
+                figur2()
                 }
-                
+
             }
             else {
-                plotA_reactive()
+              figur2()
             }
-            
-        } 
-        else {
-            plotA_reactive()
+
         }
-        
+        else {
+          figur2()
+        }
+
     })
     
 }
