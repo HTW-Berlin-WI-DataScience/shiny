@@ -18,7 +18,7 @@ mmstat.ui.elem("cex",        "fontSize")
 
 confint <- vector("list", 0)
 
-CImean  <-function (x, oma, xlim=NULL, sigma=NA, varM = NULL, count = NULL, hit = NULL) {
+CImean  <-function (x, oma, xlim=NULL, sigma=NA, varM = NULL, count = NULL, hit = NULL, pa, size) {
   n <- length(x)
   if (is.na(sigma)) {
     dist <- qt(1-(1-oma)/2, n-1)*sd(x)/sqrt(n)
@@ -37,7 +37,9 @@ CImean  <-function (x, oma, xlim=NULL, sigma=NA, varM = NULL, count = NULL, hit 
   
   
   count <- count + 1
-  
+
+  d <- pa
+  g <- size
   
   if ((lower <= varM) & (upper >= varM) ){
     hit <- hit + 1 
@@ -51,7 +53,7 @@ CImean  <-function (x, oma, xlim=NULL, sigma=NA, varM = NULL, count = NULL, hit 
   } else {
     lim   <- mmstat.merge(xlim, c(newLower, newUpper))
   }
-  list(upper=upper, lower=lower, mean=mean, oma=oma, n=n, xlim=lim, valuess = count, treffer = hit, alphaDachC = alphaDach)
+  list(upper=upper, lower=lower, mean=mean, oma=oma, n=n, xlim=lim, valuess = count, treffer = hit, alphaDachC = alphaDach, wert = d, zahl = g)
 }
 
 drawIqrBoxWithPoints <- function (x, jitter, ylim, box.param=NULL, points.param=NULL) {
@@ -81,7 +83,7 @@ drawIqrBoxWithPoints <- function (x, jitter, ylim, box.param=NULL, points.param=
 
 shinyServer(function(input, output, session) {
   
-  tester <- reactiveVal("a")
+  wert <- reactiveVal("a")
   
   
   output$conflevelUI <- renderUI({ mmstat.ui.call('conflevel') })
@@ -117,7 +119,7 @@ shinyServer(function(input, output, session) {
   getVar <- reactive({
     inp         <- mmstat.getValues(NULL, dataset=isolate(input$dataset), variable=input$variable)
     var         <- mmstat.getVar(inp$dataset, inp$variable)
-    var$ticks   <- mmstat.ticks(var$n, nmin=30)   
+    var$ticks   <- mmstat.ticks(var$n, nmin=10)   
     dec         <- mmstat.dec(0.1*c(0, var$sd/sqrt(max(var$ticks))))
     var$decimal <- dec$decimal
     var
@@ -161,10 +163,11 @@ shinyServer(function(input, output, session) {
   # ignoreInit = TRUE)
   
   
-  observeEvent(input$conflevel,{
-    newValue <- "b"
-    tester(newValue) 
-  })
+  # observeEvent(input$conflevel,{
+  #   newValue <- "b"
+  #   wert(newValue) 
+  # })
+  
   
   
   
@@ -183,10 +186,19 @@ shinyServer(function(input, output, session) {
     nci      <- length(confint)
     if(nci>0) xlim<-confint[[nci]]$xlim else xlim = NULL;
     clal     <- mmstat$UI$conflevel$ticks[inp$conflevel]/100
+    size2  <- sapply(confint, '[[', 'n')
+    index2 <- 1+c(0, which(diff(size2)!=0))
     
-    
-    count <- length(confint)
-    
+    if(nci > 1){
+      if(confint[[nci]]$wert == clal & confint[[nci]]$zahl == getSize()){
+        count <- confint[[nci]]$valuess
+      }else{
+        count <- 0
+        confint[[nci]]$treffer <- 0
+      }
+    }else{
+      count <- length(confint)
+    }
     
     if(nci > 0){
       hit <- confint[[nci]]$treffer 
@@ -194,7 +206,7 @@ shinyServer(function(input, output, session) {
       hit <- 0
     }
     
-    confint[[nci+1]] <<- CImean(sample, clal, xlim, ifelse(inp$sigma, var$sd, NA), varM = var$mean, count, hit)
+    confint[[nci+1]] <<- CImean(sample, clal, xlim, ifelse(inp$sigma, var$sd, NA), varM = var$mean, count, hit, clal[index2], getSize())
     nci              <- length(confint)
     index
   })
@@ -213,7 +225,7 @@ shinyServer(function(input, output, session) {
     if (nci) {
       par (mar=c(2,0,2,0))
       plot (0, 0, type="n", xlim=confint[[nci]]$xlim, ylim=c(1.5, 2.0+0.2*nci), axes=F, col=mmstat$col[[1]], 
-            main=sprintf(gettext("%i confidence interval(s)"), nci),
+            main=sprintf(gettext("confidence interval(s)")),
             cex.axis=inp$cex, cex.lab=inp$cex, cex.main=1.2*inp$cex, cex.sub=inp$cex)
       #Text für den mittelwert (3.61)
       text(var$mean, 1.5, sprintf("%.*f", var$decimal, var$mean), col=mmstat$col[[1]], pos=4, cex=inp$cex)
@@ -267,7 +279,7 @@ shinyServer(function(input, output, session) {
       axis(3, at=posx, labels=c(expression('n'), expression(alpha), expression(hat(alpha))), cex.axis=inp$cex)
       abline(v=var$mean, col=mmstat$col[[1]], lwd=3, lty="dotted")
       
-      #text(3, 1.5, labels=c(index))       
+      text(3, 1.5, labels=c(confint[[nci]]$zahl))       
       box()
     }
   })    
