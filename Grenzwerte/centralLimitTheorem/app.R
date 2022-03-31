@@ -1,5 +1,6 @@
 library(shiny)
 library(ggplot2)
+
 library(plotly)
 ##Author: ...
 
@@ -35,8 +36,9 @@ label_question_three <- HTML("<b>Wenn \\(\\sigma\\) die Standardabweichung aller
 text1 <- HTML("In dieser App werden Aussagen des Zentralen Grenzwertsatzes der Statistik demonstriert. Als Beispiel möchten wir die mittlere Miete pro Quadratmeter in einer Stadt bestimmen. In der Praxis kennen wir üblicherweise nur die Mietpreise von einer Stichprobe der Immobilien und können daraus die wahre mittlere Miete nur schätzen. Der zentrale Grenzwertsatz hilft uns dabei, die Genauigkeit unserer Schätzung zu untersuchen.")
 text2 <- HTML("Um die Theorie zu erklären, gehen wir davon aus, dass wir den Mietpreis pro qm aller Immobilien in der Stadt und damit auch dessen wahren Mittelwert und die Standardabweichung \\(\\sigma\\) als Maß für die Streuung kennen.
               Wir ziehen nun tausendmal eine Stichprobe der Größe n aus den Daten und berechnen für jede der tausend Stichproben die mittlere Miete und schauen, wie sich die tausend Schätzungen zum wahren Mittelwert verhalten.")
-text3 <- 'Das Histogramm zeigt die Verteilung der eintausend Mittelwerte sowie'
-text4 <- "den wahren Mittelwert als rote gestrichelte Linie."
+text3 <- 'Das Histogramm zeigt die Verteilung der eintausend Mittelwerte und den wahren Mittelwert als rote gestrichelte Linie,'
+text4 <- "sowie die theoretische Normalverteilung der Mittelwerte."
+text5 <- "Das hellrote Histogramm zeigt die Verteilung der Grundgesamtheit an (Mietpreis aller Immobilien)."
 
 ui <- fluidPage(
     withMathJax(),
@@ -139,6 +141,8 @@ ui <- fluidPage(
             p(text2),
             br(),
             textOutput("answertext"),
+            br(),
+            p(text5),
             plotlyOutput("plot")
         )
     )
@@ -325,14 +329,15 @@ server <- function(input, output, session) {
                      color="red", linetype="dashed", size=1) +
           #anser_reactive()+
           #  geom_jitter(aes(x=means, y=0), col = "blue") +
-          xlim(6, 10) +
+          xlim(0, 15) +
           xlab("mittlerer Mietpreis pro quadratmeter") +
           ylab("Dichte") +
           geom_histogram(data = data.frame(data = data), aes(x = data, y=..density..), binwidth = my_binwidth(), col = "white", alpha=.2, fill="#FF6666")
-      )
+      )%>%
+        rangeslider() %>%
+        layout(xaxis = list(range = c(6, 10))) 
     })
   
-
     
     # #Plot Histo
     output$plot <- renderPlotly({
@@ -341,7 +346,7 @@ server <- function(input, output, session) {
             if(!value_reactive() == ""){
 
                 if(value_reactive() == quizTwo_answer_two){
-                  xa <- seq(0,10, length.out=100)
+                  xa <- seq(0,15, length.out=1000)
                   dd <- with(dataFrame_means(), data.frame(xa= xa, y = dnorm(xa, mean(daten), sd(daten))))
                   ggplotly(
                     ggplot(data = dataFrame_means(), aes(x=daten)) +
@@ -351,13 +356,15 @@ server <- function(input, output, session) {
                                  color="red", linetype="dashed", size=1) +
                       #anser_reactive()+
                       #  geom_jitter(aes(x=means, y=0), col = "blue") +
-                      xlim(6, 10) +
+                      xlim(0, 15) +
                       xlab("mittlerer Mietpreis pro quadratmeter") +
                       ylab("Dichte") + geom_function(fun = dnorm) +
                       geom_line(data = dd, aes(x = xa, y=y), color = "red")+
                       geom_histogram(data = data.frame(data = data), aes(x = data, y=..density..), binwidth = my_binwidth(), col = "white", alpha=.2, fill="#FF6666")
                     #stat_function(fun = function(x) dnorm(x,mean,sd/sqrt(size())),colour = "red")
-                  )
+                  ) %>%
+                    rangeslider()%>%
+                    layout(xaxis = list(range = c(6, 10))) 
 
                 }
               else {
