@@ -186,19 +186,24 @@ server<-(function(input, output, session){
     
     inFile <- input$file1
     
-    saveRDS(input$file1, "testData.rds")
+    if (is.null(inFile))
+      return(NULL)
+    
+    df <- read.csv(inFile$datapath,
+                   header = input$header,
+                   sep = input$sep)
+    
+    saveRDS(df, "testData.rds")
     
     if (is.null(inFile))
       return(NULL)
     
-    #could also store in a reactiveValues
-    read.csv(inFile$datapath,
-             header = input$header,
-             sep = input$sep)
+  
   })
   
   observeEvent(input$file1,{
-    inFile<<-upload_data()
+    upload_data()
+    inFile <<- readRDS("testData.rds")
   })
   
   
