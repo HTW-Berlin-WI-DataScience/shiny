@@ -40,9 +40,9 @@ ui <- fluidPage(
                    In dem Baumdiagramm stehen die Anzahl der jeweiligen Ergebnisse entlang der Kanten. 
                    Im Waffelplot werden die einzelnen Testergebnisse visualisiert. Ein farbiges Rechteck entspricht dabei einem Testergebnis."),
                  h4("Gruppenmitglieder"),
-                 p("Konstantin Groll (567029)"),
-                 p("Carmen Luu (564264)"),
-                 p("Antoine Ma (566469)"),
+                 p("Konstantin Groll"),
+                 p("Carmen Luu"),
+                 p("Antoine Ma"),
                  h4("Quellen"),
                  p("Folgende Ressourcen wurden zur Erstellung der Abgabe und als Inspirationsquellen genutzt:"),
                  p("- https://rki-wiko.shinyapps.io/test_qual/"),
