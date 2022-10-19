@@ -1,0 +1,13 @@
+name: 02_histogramm
+title: 02 Histogramm
+username: matthias
+account: matthias
+server: 141.45.94.169
+hostUrl: http://141.45.94.169:3939/__api__
+appId: 2
+bundleId: 6
+url: http://141.45.94.169:3939/content/2/
+when: 1523447202.74264
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .directory

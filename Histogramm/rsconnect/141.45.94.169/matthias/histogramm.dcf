@@ -1,0 +1,12 @@
+name: histogramm
+title: Histogramm
+username: matthias
+account: matthias
+server: 141.45.94.169
+hostUrl: http://141.45.94.169:3939/__api__
+appId: 14
+bundleId: 23
+url: http://141.45.94.169:3939/content/14/
+when: 1528808737.7273
+asMultiple: FALSE
+asStatic: FALSE

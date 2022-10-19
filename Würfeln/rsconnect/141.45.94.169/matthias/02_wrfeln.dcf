@@ -1,0 +1,12 @@
+name: 02_wrfeln
+title: 02 Würfeln
+username: matthias
+account: matthias
+server: 141.45.94.169
+hostUrl: http://141.45.94.169:3939/__api__
+appId: 5
+bundleId: 8
+url: http://141.45.94.169:3939/content/5/
+when: 1523447687.51251
+asMultiple: FALSE
+asStatic: FALSE
