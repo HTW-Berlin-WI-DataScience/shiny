@@ -25,7 +25,7 @@ ui <- fluidPage(
                  tableOutput("tabelle"),
                  h3("Kennzahlen"),
                  p("Positiver Vorhersagewert: Eine Person hat ein positives Testergebnis. Wie wahrscheinlich ist sie tatsächlich positiv?"),
-                 p("Positiver Vorhersagewert: Eine Person hat ein negatives Testergebnis. Wie wahrscheinlich ist sie tatsächlich nicht positiv?"),
+                 p("Negativer Vorhersagewert: Eine Person hat ein negatives Testergebnis. Wie wahrscheinlich ist sie tatsächlich negativ?"),
                  tableOutput("tabelleKennzahlen")
         ),
         tabPanel(title = "Baumdiagramm",
