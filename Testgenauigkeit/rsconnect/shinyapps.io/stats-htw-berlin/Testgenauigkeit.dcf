@@ -1,0 +1,13 @@
+name: Testgenauigkeit
+title: Testgenauigkeit
+username:
+account: stats-htw-berlin
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7845777
+bundleId: 6609452
+url: https://stats-htw-berlin.shinyapps.io/Testgenauigkeit/
+when: 1670488614.14055
+lastSyncTime: 1670488614.14056
+asMultiple: FALSE
+asStatic: FALSE

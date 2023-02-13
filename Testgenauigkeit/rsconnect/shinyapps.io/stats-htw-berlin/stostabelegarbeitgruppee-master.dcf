@@ -1,0 +1,13 @@
+name: stostabelegarbeitgruppee-master
+title:
+username:
+account: stats-htw-berlin
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6487412
+bundleId: 6609442
+url: https://stats-htw-berlin.shinyapps.io/stostabelegarbeitgruppee-master/
+when: 1670488401.13761
+lastSyncTime: 1670488401.13762
+asMultiple: FALSE
+asStatic: FALSE
